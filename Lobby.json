@@ -1,0 +1,189 @@
+{
+	"mainFields": ["Game Mode"],
+	"needsPlayerStorage": true,
+	"fields": {
+		"Game Mode": {
+			"type": "select",
+			"options":	[
+				"Classic",
+				"Swap Builds Randomly",
+				"Random OMG",
+				"Build for the Enemy",
+				"Pick From 20 Skills",
+				"One Build to Rule Them All",
+				"Blue VS Pink",
+				"Blue VS Pink Swapped",
+				"Cycling Builds",
+				"Unlimited Points"
+			]
+		},
+
+		"Unique Skills": {
+			"type": "select",
+			"options":	[
+				"Don't Force Unique Skills",
+				"Unique Team Skills",
+				"Unique Global Skills"
+			]
+		},
+
+		"Picking Time": {
+			"type": "select",
+			"options":	[
+				"3:00 Picking Time",
+				"2:00 Picking Time",
+				"2:30 Picking Time",
+				"3:30 Picking Time",
+				"4:00 Picking Time",
+				"4:30 Picking Time",
+				"5:00 Picking Time"
+			]
+		},
+
+		"Banning Time": {
+			"type": "select",
+			"options":	[
+				"1:00 Banning Phase",
+				"1:30 Banning Phase",
+				"2:00 Banning Phase",
+				"No Banning Phase"
+			]
+		},
+
+		"Silent Banning": {
+			"type": "select",
+			"options":	[
+				"Silent Banning",
+				"Announce Bans"
+			]
+		},
+
+		"Number of Slots": {
+			"type": "select",
+			"options":	[
+				"Use 4 Slots",
+				"Use 1 Slot",
+				"Use 2 Slots",
+				"Use 3 Slots",
+				"Use 4 Slots",
+				"Use 5 Slots",
+				"Use 6 Slots"
+			]
+		},
+
+		"Max Number of Regular Skills": {
+			"type": "select",
+			"options":	[
+				"Allow Upto 6 Regular Skills",
+				"Allow Upto 5 Regular Skills",
+				"Allow Upto 4 Regular Skills",
+				"Allow Upto 3 Regular Skills",
+				"Allow Upto 2 Regular Skills",
+				"Allow Upto 1 Regular Skill",
+				"Don't Allow Regular Skills"
+			]
+		},
+
+		"Max Number of Ults": {
+			"type": "select",
+			"options":	[
+				"Allow Upto 1 Ult",
+				"Allow Upto 2 Ults",
+				"Allow Upto 3 Ults",
+				"Allow Upto 4 Ults",
+				"Allow Upto 5 Ults",
+				"Allow Upto 6 Ults",
+				"Don't Allow Ults"
+			]
+		},
+
+		"Allow Skills Twice in a Row": {
+			"type": "select",
+			"options":	[
+				"Allow Skills Twice in a Row",
+				"Disallow Skills Twice in a Row"
+			]
+		},
+
+		"Allow Custom Bear Skills": {
+			"type": "select",
+			"options":	[
+				"Allow Custom Bear Skills",
+				"Disallow Custom Bear Skills"
+			]
+		},
+
+		"Allow Custom Tower Skills": {
+			"type": "select",
+			"options":	[
+				"Disallow Custom Tower Skills",
+				"Allow Custom Tower Skills"
+			]
+		},
+
+		//"Allow Custom Skills": {
+		//	"type": "select",
+		//	"options":	[
+		//		"Allow Custom Skills",
+		//		"Disallow Custom Skills"
+		//	]
+		//},
+
+		"Allow Passive Skills": {
+			"type": "select",
+			"options":	[
+				"Allow Passive Skills",
+				"Ban Passive Skills"
+			]
+		},
+
+		"Allow Neutral Abilities": {
+			"type": "select",
+			"options":	[
+				"Allow Neutral Abilities",
+				"Ban Neutral Abilities"
+			]
+		},
+
+		"Allow Summon Abilities": {
+			"type": "select",
+			"options":	[
+				"Allow Summon Abilities",
+				"Ban Summon Abilities"
+			]
+		},
+
+		//"Allow Greevling Abilities": {
+		//	"type": "select",
+		//	"options":	[
+		//		"Allow Greevling Abilities",
+		//		"Ban Greevling Abilities"
+		//	]
+		//},
+
+		"Ban Troll Combos": {
+			"type": "select",
+			"options":	[
+				"Ban Troll Combos",
+				"Allow Trolls"
+			]
+		},
+
+		"Ban Silencer": {
+			"type": "select",
+			"options":	[
+				"Ban Silencer",
+				"Allow Silencer"
+			]
+		},
+
+		"Ban Invisibility": {
+			"type": "select",
+			"options":	[
+				"Ban Perma Invisibility",
+				"Ban All Invisibility Abilities",
+				"Allow Invisibility"
+			]
+		}
+	}
+}
