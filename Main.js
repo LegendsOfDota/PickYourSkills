@@ -108,7 +108,7 @@ var singleDraftSkills = {};
 
 // Stores people's custom skills
 var customBearSkills = {};
-var allowCustomBearSkills = true;
+var allowCustomBearSkills = 1;
 var allowCustomTowerSkills = true;
 
 // The gamemode people want to play
@@ -139,6 +139,9 @@ var skillList = abList.Abs.concat(abList.Ults);
 
 // Allows us to do custom abilities
 var customAbility = null;
+
+// Autostart game?
+var autoStartGame = true
 
 plugin.get('LobbyManager', function(obj){
 	// Store lobby manager
@@ -213,6 +216,16 @@ plugin.get('LobbyManager', function(obj){
 
             case 'Unique Global Skills':
                 banUniqueSkills = 2;
+            break;
+        }
+
+        switch(options['Autostart Game']) {
+            case 'Autostart Game':
+                autoStartGame = true;
+            break;
+
+            case 'Wait for Loaders':
+                autoStartGame = false;
             break;
         }
 
@@ -344,11 +357,15 @@ plugin.get('LobbyManager', function(obj){
 		// Custom bear skills
 		switch(options['Allow Custom Bear Skills']) {
 			case 'Allow Custom Bear Skills':
-				allowCustomBearSkills = true
+				allowCustomBearSkills = 1
+			break;
+
+			case 'Allow Custom Everything Skills':
+				allowCustomBearSkills = 2
 			break;
 
 			case 'Disallow Custom Bear Skills':
-				allowCustomBearSkills = false
+				allowCustomBearSkills = 0
 			break;
 		}
 
@@ -979,6 +996,9 @@ function loadDeps(skill) {
 	}
 }
 
+// Has this team gotten couriers?
+var gottenCouriers = {}
+
 // A list of everyone (indexed by playerID) that has had their skills replaced on spawn already
 var replacedSkills = {};
 
@@ -1027,6 +1047,42 @@ game.hook("Dota_OnHeroSpawn", function(hero) {
 			}
 		}
 	}, 1);
+
+	// We have to wait a moment before giving the courier
+	timers.setTimeout(function() {
+		// Check if the hero is valid
+		if(!hero || !hero.isValid()) return;
+
+		// Check if we've already gotten a courier
+		if(gottenCouriers[hero.netprops.m_iTeamNum]) return;
+
+		// Check if this hero has space
+		var hasSpace = false;
+		for(var i=0; i<6; i++) {
+			if(hero.netprops.m_hItems[i] == null) {
+				hasSpace = true;
+				break;
+			}
+		}
+
+		// Only a hero with space can do this
+		if(!hasSpace) return;
+
+		// Spawn a courier
+		var item = dota.giveItemToHero('item_courier', hero);
+
+		dota.executeOrders(hero.netprops.m_iPlayerID, dota.ORDER_TYPE_CAST_ABILITY_NO_TARGET, [hero], null, item, false, {x:0, y:0, z:0});
+
+		// Stop sellage
+		item.netprops.m_bSellable = 0;
+
+		// Upgrade it
+		item = dota.giveItemToHero('item_flying_courier', hero);
+		item.netprops.m_bSellable = 0;
+
+		// Store that this team now has a courier
+		gottenCouriers[hero.netprops.m_iTeamNum] = true;
+	}, 1000);
 
 	// Check if our skills have already been replaced
 	if(replacedSkills[playerID]) return;
@@ -1222,10 +1278,19 @@ game.hook("OnClientDisconnect", function(client) {
 
 var midTimer = 0;
 var setToMidOnly = true;
+var cvLoaders
+if(autoStartGame) {
+	cvLoaders = console.findConVar("dota_wait_for_players_to_load");
+	cvLoaders.setInt(0);
+}
 game.hook("OnGameFrame", function() {
 	if(pickState == STATE_INIT) {
 		// Don't pause the game
 		dota.setGamePaused(false);
+
+		if(autoStartGame) {
+			cvLoaders.setInt(0);
+		}
 
 		// Check if it's time to set mid only
 		if(game.rules.props.m_nGameState >= dota.STATE_HERO_SELECTION) {
@@ -1463,6 +1528,10 @@ function loopOverHeroes(callback) {
 
 // Loops over a heroes abilties, calls: callback(ab)
 function loopOverSkills(hero, callback) {
+	// Make sure it has skills
+	if(hero.netprops.m_hAbilities == null) return;
+
+	// Loop over said skills
 	for(var i=0; i<16; i++) {
 		// Grab ability
 		var ab = hero.netprops.m_hAbilities[i];
@@ -2848,10 +2917,10 @@ function selectBearSkill(client, name, slot) {
 	}
 
 	// Bear can't use ults
-	if(abList.Ults.indexOf(name) != -1) {
+	/*if(abList.Ults.indexOf(name) != -1) {
 		client.print('You can\'t use {pink}{1} {lgreen}on the bear (no ults)'.format(name));
 		return;
-	}
+	}*/
 
 	// Make a logical slot, instead of friendly slot
 	var dotaSlot = slot-1;
@@ -3768,6 +3837,51 @@ customSpells['custom_meandraco_gungnir'] = {
 	}
 }
 
+customSpells['custom_summon_roshan'] = {
+	base: 'venomancer_plague_ward',
+	cooldown: [600, 500, 400, 300],
+	manacost: [100, 150, 200, 250],
+	range: [100, 100, 100, 100],
+	callback: function(ab) {
+		var pos = dota.getCursorLocation(ab);
+		if(!pos) return;
+
+		// Grab the owner
+		var owner = dota.getAbilityCaster(ab);
+
+		// Create the ward
+		var unit = dota.createCustomUnit('npc_dota_neutral_rock_golem', owner.netprops.m_iTeamNum, {
+			'AttackCapabilities': 'DOTA_UNIT_CAP_MELEE_ATTACK',
+			'AttackDamageMin': '65',
+			'AttackDamageMax': '65',
+			'AttackDamageType': 'DAMAGE_TYPE_ArmorPhysical',
+			'AttackRate': '1',
+			'ArmorPhysical': '3',
+			'MagicalResistance': '75',
+			'BountyGoldMin': '250',
+			'BountyGoldMax': '500',
+			'BountyXP': '500',
+			'model': 'models/creeps/roshan/roshan.mdl',
+			'StatusHealth': '3000',
+			'StatusHealthRegen': '5',
+			'VisionDaytimeRange': '1400',
+			'VisionNighttimeRange': '1400',
+			'Ability1': 'roshan_spell_block',
+			'Ability2': 'roshan_bash',
+			'Ability3': 'roshan_slam',
+			'Ability4': 'roshan_inherent_buffs',
+			'Ability5': 'roshan_inherent_buffs',
+			'BoundsHullName': 'roshan_devotion'
+		});
+
+		// Move it into position
+		dota.findClearSpaceForUnit(unit, pos);
+
+		// Give the owner control of it
+		unit.netprops.m_iIsControllableByPlayer = 1 << owner.netprops.m_iPlayerID;
+	}
+}
+
 customSpells['custom_meandraco_gungnir_return'] = {
 	base: 'bristleback_quill_spray',
 	cooldown: [9999, 9999, 9999, 9999],
@@ -3971,8 +4085,6 @@ game.hook("Dota_OnGetAbilityValue", function(ability, abilityName, field, values
 game.hook("Dota_OnUnitParsed", function(unit, keyvalues) {
 	if(!unit || !unit.isValid()) return;
 
-	var name = unit.getClassname();
-
 	// Hero stat related stuff
 	if(unit.isHero()) {
 		if(!keyvalues['ProjectileSpeed']) {
@@ -3981,9 +4093,17 @@ game.hook("Dota_OnUnitParsed", function(unit, keyvalues) {
 	}
 
 	// Lone droid bear patch
-	if(name.indexOf('npc_dota_lone_druid_bear') != -1) {
+	var name = unit.getClassname();
+	if((allowCustomBearSkills == 2) || (allowCustomBearSkills == 1 && name.indexOf('npc_dota_lone_druid_bear') != -1)) {
+		// Stop hero from being patched
+		if(unit.isHero()) return;
+		if(unit.getClassname().indexOf('npc_dota_courier') != -1) return;
+		if(unit.getClassname().indexOf('npc_dota_flying_courier') != -1) return;
+
 		// Give projectile speed
-		keyvalues['ProjectileSpeed'] = '900';
+		if(!keyvalues['ProjectileSpeed']) {
+			keyvalues['ProjectileSpeed'] = '900';
+		}
 
 		timers.setTimeout(function() {
 			var owner = unit.netprops.m_hOwnerEntity;
@@ -3991,9 +4111,13 @@ game.hook("Dota_OnUnitParsed", function(unit, keyvalues) {
 
 			// Grab the playerID of the owner of this bear
 			var playerID = owner.netprops.m_iPlayerID;
+			if(playerID == null || playerID < 0) return;
 
 			if(customBearSkills[playerID]) {
-				var lvl = 1;
+				// Make sure this unit has abilities
+				if(!unit.netprops.m_hAbilities) return;
+
+				var lvl = 4;
 
 				// Remove all old skills
 				loopOverSkills(unit, function(ab) {

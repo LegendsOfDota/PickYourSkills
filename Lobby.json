@@ -18,6 +18,14 @@
 			]
 		},
 
+		"Autostart Game": {
+			"type": "select",
+			"options":	[
+				"Autostart Game",
+				"Wait for Loaders"
+			]
+		},
+
 		"Unique Skills": {
 			"type": "select",
 			"options":	[
@@ -53,8 +61,8 @@
 		"Silent Banning": {
 			"type": "select",
 			"options":	[
-				"Silent Banning",
-				"Announce Bans"
+				"Announce Bans",
+				"Silent Banning"
 			]
 		},
 
@@ -109,6 +117,7 @@
 			"type": "select",
 			"options":	[
 				"Allow Custom Bear Skills",
+				"Allow Custom Everything Skills",
 				"Disallow Custom Bear Skills"
 			]
 		},
