@@ -26,6 +26,14 @@
 			]
 		},
 
+		"Dev Mode": {
+			"type": "select",
+			"options":	[
+				"Dev Stuff Off",
+				"Dev Stuff On (Only select this if you are Ash47)"
+			]
+		},
+
 		"Unique Skills": {
 			"type": "select",
 			"options":	[

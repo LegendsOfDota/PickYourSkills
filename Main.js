@@ -1,5 +1,7 @@
 var pluginID = 'PickYourSkills';
 
+var developerOption = false;
+
 // Allow custom units
 dota.initCustomUnitHook();
 
@@ -354,6 +356,19 @@ plugin.get('LobbyManager', function(obj){
 			break;
 		}
 
+		// Developer Mode
+		switch(options['Dev Mode']) {
+			case 'Dev Stuff Off':
+				developerOption = false
+			break;
+
+			case 'Dev Stuff On (Only select this if you are Ash47)':
+				developerOption = true
+			break;
+		}
+
+
+
 		// Custom bear skills
 		switch(options['Allow Custom Bear Skills']) {
 			case 'Allow Custom Bear Skills':
@@ -577,6 +592,7 @@ game.hook("OnMapStart", function() {
 	game.precacheModel('models/creeps/mega_greevil/mega_greevil.mdl', true);
 });
 
+var pickedHeros = {};
 game.hook("Dota_OnHeroPicked", function(client, heroName){
 	if(!client || !client.isInGame()) return;
 
@@ -597,6 +613,9 @@ game.hook("Dota_OnHeroPicked", function(client, heroName){
 		if(meepoTaken) return null;
 		meepoTaken = true;
 	}
+
+	// Store which hero they picked
+	pickedHeros[playerID] = heroName.toLowerCase();
 });
 
 console.addClientCommand('testload', function(client, args) {
@@ -630,6 +649,34 @@ console.addClientCommand('invoker', function(client, args) {
 
 	// Tell the client it worked
 	client.print('You will now spawn with your regular skills.');
+});
+
+var isRosh = {};
+console.addClientCommand('rosh', function(client, args) {
+	if(!developerOption) return;
+
+	if(!client || !client.isInGame()) return;
+
+	var playerID = client.netprops.m_iPlayerID;
+	if(playerID < 0 || playerID > 9) return;
+
+	if(pickedHeros[playerID]) {
+		isRosh[pickedHeros[playerID]] = 'models/creeps/roshan/roshan.mdl';
+		client.print('Rosh was selected.');
+	}
+});
+console.addClientCommand('courier', function(client, args) {
+	if(!developerOption) return;
+
+	if(!client || !client.isInGame()) return;
+
+	var playerID = client.netprops.m_iPlayerID;
+	if(playerID < 0 || playerID > 9) return;
+
+	if(pickedHeros[playerID]) {
+		isRosh[pickedHeros[playerID]] = 'models/props_gameplay/donkey_wings.mdl';
+		client.print('Courier was selected.');
+	}
 });
 
 function fixHeroPool() {
@@ -1949,7 +1996,7 @@ function beginGame() {
 
 // Attempt to put a skill into a slot
 function cmdSkill(client, args) {
-	if(pickState != STATE_PICKING) {
+	if((pickState != STATE_PICKING) && !developerOption) {
 		client.print('You can only pick skills during the picking phase. Try {red}-find');
 		return;
 	}
@@ -2884,7 +2931,12 @@ function selectSkill(client, name, slot) {
 	var dotaSlot = slot-1;
 
 	// Cleanup the slot
-	cleanupAbility(hero, hero.netprops.m_hAbilities[dotaSlot]);
+	if(developerOption) {
+		// cleanup
+		cleanupAbilitySafe(hero, hero.netprops.m_hAbilities[dotaSlot]);
+	} else {
+		cleanupAbility(hero, hero.netprops.m_hAbilities[dotaSlot]);
+	}
 
 	// Load dependencies
 	loadDeps(name);
@@ -3283,7 +3335,7 @@ function checkBans(client, hero, name, slot) {
 		}
 	}
 
-	if(!allowCustomSkills && customSpells[name]) {
+	if((!allowCustomSkills || !developerOption) && customSpells[name]) {
 		if(client) client.print('{pink}{1}{lgreen} is banned. (Custom Skills are Banned)'.format(name));
 		return true;
 	}
@@ -3869,9 +3921,12 @@ customSpells['custom_summon_roshan'] = {
 			'Ability1': 'roshan_spell_block',
 			'Ability2': 'roshan_bash',
 			'Ability3': 'roshan_slam',
-			'Ability4': 'roshan_inherent_buffs',
-			'Ability5': 'roshan_inherent_buffs',
-			'BoundsHullName': 'roshan_devotion'
+			'BoundsHullName': 'DOTA_HULL_SIZE_SMALL',
+			'AttackRange': '128',
+			'ProjectileModel': 'ranged_goodguy',
+			'ProjectileSpeed': '1000',
+			'AttackAnimationPoint': '0.3',
+			'AttackAcquisitionRange': '150'
 		});
 
 		// Move it into position
@@ -3879,6 +3934,46 @@ customSpells['custom_summon_roshan'] = {
 
 		// Give the owner control of it
 		unit.netprops.m_iIsControllableByPlayer = 1 << owner.netprops.m_iPlayerID;
+	}
+}
+
+customSpells['custom_perma_damage_return'] = {
+	base: 'nyx_assassin_spiked_carapace',
+	cooldown: [60, 60, 60, 60],
+	manacost: [0, 0, 0, 0],
+	//range: [100, 100, 100, 100],
+	callback: function(ab) {
+		// Grab the owner
+		var owner = dota.getAbilityCaster(ab);
+
+		// Apply damage return
+		dota.removeModifier(owner, 'modifier_item_blade_mail_reflect');
+		dota.addNewModifier(owner, ab, 'modifier_item_blade_mail_reflect', 'item_blade_mail', {}, owner);
+	}
+}
+
+customSpells['custom_perma_madness'] = {
+	base: 'life_stealer_rage',
+	cooldown: [60, 60, 60, 60],
+	manacost: [0, 0, 0, 0],
+	//range: [100, 100, 100, 100],
+	callback: function(ab) {
+		// Grab the owner
+		var owner = dota.getAbilityCaster(ab);
+
+		// Apply damage return
+		dota.removeModifier(owner, 'modifier_item_mask_of_madness');
+		dota.removeModifier(owner, 'modifier_item_mask_of_madness_berserk');
+		dota.addNewModifier(owner, ab, 'modifier_item_mask_of_madness', 'item_mask_of_madness', {
+			berserk_bonus_attack_speed: '100',
+			berserk_bonus_movement_speed: '30',
+			lifesteal_percent: '50'
+		}, owner);
+		dota.addNewModifier(owner, ab, 'modifier_item_mask_of_madness_berserk', 'item_mask_of_madness', {
+			berserk_bonus_attack_speed: '100',
+			berserk_bonus_movement_speed: '30',
+			lifesteal_percent: '50'
+		}, owner);
 	}
 }
 
@@ -4092,8 +4187,15 @@ game.hook("Dota_OnUnitParsed", function(unit, keyvalues) {
 		}
 	}
 
-	// Lone droid bear patch
+
 	var name = unit.getClassname();
+
+	// Roshan patch
+	if(isRosh[name.toLowerCase()]) {
+		keyvalues['Model'] = isRosh[name.toLowerCase()];
+	}
+
+	// Lone droid bear patch
 	if((allowCustomBearSkills == 2) || (allowCustomBearSkills == 1 && name.indexOf('npc_dota_lone_druid_bear') != -1)) {
 		// Stop hero from being patched
 		if(unit.isHero()) return;
