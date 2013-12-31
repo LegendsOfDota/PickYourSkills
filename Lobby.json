@@ -66,6 +66,17 @@
 			]
 		},
 
+		"Number of Bans": {
+			"type": "select",
+			"options":	[
+				"5 Bans",
+				"10 Bans",
+				"15 Bans",
+				"25 Bans",
+				"50 Bans"
+			]
+		},
+
 		"Silent Banning": {
 			"type": "select",
 			"options":	[

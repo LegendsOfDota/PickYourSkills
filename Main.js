@@ -244,6 +244,9 @@ plugin.get('LobbyManager', function(obj){
 			break;
 		}
 
+		// Load max bans
+		maxBans = parseInt(options['Number of Bans']);
+
 		// Grab how many slots to use
 		switch(options['Number of Slots']) {
             case 'Use 1 Slot':
