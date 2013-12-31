@@ -124,9 +124,9 @@
 		"Allow Custom Bear Skills": {
 			"type": "select",
 			"options":	[
+				"Disallow Custom Unit Skills",
 				"Allow Custom Bear Skills",
-				"Allow Custom Everything Skills",
-				"Disallow Custom Bear Skills"
+				"Allow Custom Unit Skills"
 			]
 		},
 

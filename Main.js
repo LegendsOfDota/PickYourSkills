@@ -375,11 +375,11 @@ plugin.get('LobbyManager', function(obj){
 				allowCustomBearSkills = 1
 			break;
 
-			case 'Allow Custom Everything Skills':
+			case 'Allow Custom Unit Skills':
 				allowCustomBearSkills = 2
 			break;
 
-			case 'Disallow Custom Bear Skills':
+			case 'Disallow Custom Unit Skills':
 				allowCustomBearSkills = 0
 			break;
 		}
@@ -2939,7 +2939,7 @@ function selectSkill(client, name, slot) {
 	}
 
 	// Load dependencies
-	loadDeps(name);
+    if(!developerOption) loadDeps(name);
 
 	// Put a skill into a slot
 	skillIntoSlot(hero, name, dotaSlot);
