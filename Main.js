@@ -251,37 +251,31 @@ plugin.get('LobbyManager', function(obj){
 		switch(options['Number of Slots']) {
             case 'Use 1 Slot':
                 maxSlots = 1;
-
                 fixHeroPool();
             break;
 
             case 'Use 2 Slots':
                 maxSlots = 2;
-
                 fixHeroPool();
             break;
 
             case 'Use 3 Slots':
                 maxSlots = 3;
-
                 fixHeroPool();
             break;
 
             case 'Use 4 Slots':
                 maxSlots = 4;
-
                 fixHeroPool();
             break;
 
-			case 'Use 5 Slots':
+			case 'Use 5 Slots - Turn Auto Start Off':
 				maxSlots = 5;
-
 				fixHeroPool();
 			break;
 
-			case 'Use 6 Slots':
+			case 'Use 6 Slots - Turn Auto Start Off':
 				maxSlots = 6;
-
 				fixHeroPool();
 			break;
 		}
