@@ -269,14 +269,20 @@ plugin.get('LobbyManager', function(obj){
                 fixHeroPool();
             break;
 
-			case 'Use 5 Slots - Turn Auto Start Off':
+			case 'Use 5 Slots - Auto Start Off Will Be Off':
 				maxSlots = 5;
 				fixHeroPool();
+
+                // Turn autostart off
+                autoStartGame = false;
 			break;
 
-			case 'Use 6 Slots - Turn Auto Start Off':
+			case 'Use 6 Slots - Auto Start Off Will Be Off':
 				maxSlots = 6;
 				fixHeroPool();
+
+                // Turn autostart off
+                autoStartGame = false;
 			break;
 		}
 
