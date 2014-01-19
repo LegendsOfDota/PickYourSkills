@@ -197,11 +197,13 @@
 			]
 		},
 
-		"Ban Silencer": {
+		"Ban Heroes": {
 			"type": "select",
 			"options":	[
+				"Ban Silencer and Meepo",
 				"Ban Silencer",
-				"Allow Silencer"
+				"Ban Meepo",
+				"Don't Ban Any Heroes"
 			]
 		},
 

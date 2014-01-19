@@ -74,6 +74,7 @@ var banInvis = 1;
 var banRearm = false;
 var banChemRage = false;
 var banSilencer = true;
+var banMeepo = true;
 var banPassive = false;
 var banLastSkills = true
 
@@ -468,15 +469,31 @@ plugin.get('LobbyManager', function(obj){
 		}
 
 		// Should we ban Silencer?
-		switch(options['Ban Silencer']) {
+		switch(options['Ban Heroes']) {
 			case 'Ban Silencer':
-				banSilencer = true;
+                banSilencer = true;
+                banMeepo = false;
 
-				fixHeroPool();
-			break;
+                fixHeroPool();
+            break;
 
-			case 'Allow Silencer':
+            case 'Ban Silencer and Meepo':
+                banSilencer = true;
+                banMeepo = true;
+
+                fixHeroPool();
+            break;
+
+            case 'Ban Meepo':
+                banSilencer = false;
+                banMeepo = true;
+
+                fixHeroPool();
+            break;
+
+			case 'Don\'t Ban Any Heroes':
 				banSilencer = false;
+                banMeepo = false;
 
 				fixHeroPool();
 			break;
@@ -705,6 +722,11 @@ function fixHeroPool() {
 	if(banSilencer) {
 		dota.setHeroAvailable(75, false);
 	}
+
+    // Should we ban meepo?
+    if(banMeepo) {
+        dota.setHeroAvailable(82, false);
+    }
 }
 
 function isHeroMelee(heroName) {
