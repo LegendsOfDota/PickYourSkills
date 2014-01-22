@@ -727,6 +727,9 @@ function fixHeroPool() {
     if(banMeepo) {
         dota.setHeroAvailable(82, false);
     }
+
+    // Ban SK / WK
+    dota.setHeroAvailable(42, false);
 }
 
 function isHeroMelee(heroName) {
