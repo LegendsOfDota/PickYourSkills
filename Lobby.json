@@ -70,6 +70,15 @@
 			"type": "select",
 			"options":	[
 				"5 Bans",
+				"1 Ban",
+				"2 Bans",
+				"3 Bans",
+				"4 Bans",
+				"5 Bans",
+				"6 Bans",
+				"7 Bans",
+				"8 Bans",
+				"9 Bans",
 				"10 Bans",
 				"15 Bans",
 				"25 Bans",
@@ -210,8 +219,8 @@
 		"Ban Invisibility": {
 			"type": "select",
 			"options":	[
+                "Ban All Invisibility Abilities",
 				"Ban Perma Invisibility",
-				"Ban All Invisibility Abilities",
 				"Allow Invisibility"
 			]
 		}
