@@ -75,6 +75,7 @@ var banRearm = false;
 var banChemRage = false;
 var banSilencer = true;
 var banMeepo = true;
+var banTreant = true;
 var banPassive = false;
 var banLastSkills = true
 
@@ -473,13 +474,24 @@ plugin.get('LobbyManager', function(obj){
 			case 'Ban Silencer':
                 banSilencer = true;
                 banMeepo = false;
+                banTreant = false;
 
                 fixHeroPool();
             break;
 
+            case 'Ban Silencer and Meepo and Treant':
+                banSilencer = true;
+                banMeepo = true;
+                banTreant = true;
+
+                fixHeroPool();
+            break;
+
+
             case 'Ban Silencer and Meepo':
                 banSilencer = true;
                 banMeepo = true;
+                banTreant = false;
 
                 fixHeroPool();
             break;
@@ -487,6 +499,7 @@ plugin.get('LobbyManager', function(obj){
             case 'Ban Meepo':
                 banSilencer = false;
                 banMeepo = true;
+                banTreant = false;
 
                 fixHeroPool();
             break;
@@ -494,6 +507,7 @@ plugin.get('LobbyManager', function(obj){
 			case 'Don\'t Ban Any Heroes':
 				banSilencer = false;
                 banMeepo = false;
+                banTreant = false;
 
 				fixHeroPool();
 			break;
@@ -726,6 +740,11 @@ function fixHeroPool() {
     // Should we ban meepo?
     if(banMeepo) {
         dota.setHeroAvailable(82, false);
+    }
+
+    // Should we ban treant?
+    if(banTreant) {
+    	dota.setHeroAvailable(83, false);
     }
 
     // Ban SK / WK

@@ -209,6 +209,7 @@
 		"Ban Heroes": {
 			"type": "select",
 			"options":	[
+				"Ban Silencer and Meepo and Treant",
 				"Ban Silencer and Meepo",
 				"Ban Silencer",
 				"Ban Meepo",
